@@ -22,6 +22,7 @@
 - Evidence correlation ID: `submission/evidence/correlation_id_logs.jsonl` — cùng `req-b43be1b9` trên cả `request_received` và `response_sent`.
 - Evidence PII redaction: `submission/evidence/pii_log_line.jsonl` — các dòng log **thực** trong `request_received` có `[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_CREDIT_CARD]` (kèm correlation ID + model); kèm `submission/evidence/pii_redaction.txt` show input thô vs giá trị đã scrub (`[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_PASSPORT_VN]`, `[REDACTED_CREDIT_CARD]`).
 - Evidence trace waterfall: `submission/evidence/trace_waterfall.json` — trace `f4c7a4ed9cc6a1fb987409ddc0e6d9fd` (3 tầng: trace → GENERATION `run` 3.49s → SPAN `retrieval` 2.5s).
+  ![Trace waterfall](evidence/waterfall.png)
 - Giải thích một span đáng chú ý: span `SPAN "retrieval"` (`f127cefd930f0b29`, 2.5s) chiếm hầu hết thời lượng của GENERATION `run` (3.49s) trong trace challenge; đây chính là tầng gây chậm do incident `rag_slow` (`time.sleep(2.5)` trong `mock_rag.retrieve`). Ảnh chụp waterfall phải thấy rõ span `retrieval` tách riêng để chứng minh "retrieval là nguồn gây chậm".
 
 ## 4. Prompt versioning
@@ -32,12 +33,16 @@
 - Trace ID của mỗi version: hai version/label khác nhau trong `submission/evidence/prompt_versions.txt`
   - `production`/v1: trace `0276a49b3a1f48beaf73628aa53b4e5e`, `0f2ad64dd6bb96ed538624ad6d51b4da`.
   - `candidate`/v2: trace `a6dfc72cee0fddd126c3af021a5bdd75`, `dc2023c6452da188076e475d1b75749b` (chạy app với `LANGFUSE_PROMPT_LABEL=candidate`).
+  - Ảnh danh sách hai version: ![Prompt versions](evidence/prompt_version_list.png)
+  - Ảnh trace hiển thị name/label/version cho cả production(v1) và candidate(v2): ![Prompt in traces](evidence/prompt_traces.png)
 - Bằng chứng đổi label hoặc rollback: `submission/evidence/prompt_rollback.txt` — label `production` v1 → v2 → v1.
+  ![Prompt rollback trước/sau](evidence/prompt_rollback.png)
 
 ## 5. Dashboard, SLO và alerts
 
 - Kết quả `validate_dashboard.py`: **HỢP LỆ: 6/6 panel** (`submission/evidence/validate_dashboard.txt`).
 - Evidence dashboard: `submission/evidence/dashboard_6panels.png` (6 panel: latency p50/p95/p99, traffic, error, cost, tokens, quality; mỗi panel có SLO line + đơn vị).
+  ![Dashboard 6 nhóm chỉ số](evidence/dashboard_6panels.png)
 - SLO đã chọn và lý do: `config/slo.yaml` — `latency_p95_ms ≤ 3000ms` (ngưỡng tương ứng incident rag_slow 2.5s), `error_rate_pct ≤ 2%`, `daily_cost_usd ≤ 2.5USD`, `quality_score_avg ≥ 0.75`.
 - Alert rules và runbook: `config/alert_rules.yaml` (3 alert symptom-based: `high_latency_p95`, `error_rate_breach`, `cost_breach`) + runbook tại `docs/alerts.md#alert-1/2/3`.
 
@@ -47,6 +52,7 @@
 - Triệu chứng từ metrics: toàn bộ 5 query `monitoring` có `latency_ms ≈ 2650ms > 2000ms` (ngưỡng `latency_threshold_ms`), 5/5 là BREACH.
 - Trace ID liên quan: `100efea91800b09ac27d9482046c4a10`, `64e78098053784de36ab2a0b031bb998`, `3db803d06440309ae19b64c230df65d1`, `f4c7a4ed9cc6a1fb987409ddc0e6d9fd`, `58037bb17543dc0d03d761bd48b1feb0` — mỗi trace có `SPAN "retrieval"` 2.5s tách riêng.
 - Log line/correlation ID liên quan: `req-9590fa60`, `req-dd8a407c`, `req-a4c31e1b`, `req-8a1e586b`, `req-4a1a84e9` — log `response_sent` có `latency_ms ≥ 3487ms` (chi tiết tại `submission/evidence/challenge_evidence.txt`).
+  ![Challenge spike — trace chậm có SPAN retrieval](evidence/challenge_spike.png)
 - Root cause: `STATE["rag_slow"]` thêm `time.sleep(2.5)` trong `app/mock_rag.retrieve()` (app/mock_rag.py:17-18), làm mọi request feature `monitoring` vượt ngưỡng 2000ms.
 - Fix action: tắt incident `rag_slow` (`scripts/inject_incident.py --disable`); loại bỏ delay trong `mock_rag.retrieve`.
 - Preventive measure: đặt timeout/circuit-breaker cho bước retrieve; theo dõi SLO `latency_p95` qua alert `high_latency_p95` để phát hiện sớm, không đợi user phàn nàn.
