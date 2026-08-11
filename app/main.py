@@ -53,7 +53,7 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
         user_id_hash=hash_user_id(body.user_id),
         session_id=body.session_id,
         feature=body.feature,
-        model=os.getenv("APP_MODEL", "claude-sonnet-4-5"),
+        model=os.getenv("APP_MODEL", "gemini-3.1-flash-lite"),
         env=env,
     )
 

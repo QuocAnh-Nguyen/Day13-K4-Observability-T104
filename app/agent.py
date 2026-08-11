@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import os
 import time
 from dataclasses import dataclass
 
 from . import metrics
+from .gemini_llm import GeminiLLM
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
@@ -22,9 +24,9 @@ class AgentResult:
 
 
 class LabAgent:
-    def __init__(self, model: str = "claude-sonnet-4-5") -> None:
+    def __init__(self, model: str = "gemini-3.1-flash-lite") -> None:
         self.model = model
-        self.llm = FakeLLM(model=model)
+        self.llm = GeminiLLM(model=model) if os.getenv("GOOGLE_API_KEY") else FakeLLM(model=model)
 
     @observe(as_type="generation", capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
