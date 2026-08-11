@@ -67,6 +67,15 @@ def capture_trace_ids(client) -> None:
     _write("trace_ids.txt", "\n".join(lines) + "\n")
 
 
+def _clean_metadata(metadata) -> dict:
+    if not isinstance(metadata, dict):
+        return metadata
+    cleaned = dict(metadata)
+    cleaned.pop("resourceAttributes", None)
+    cleaned.pop("scope", None)
+    return cleaned
+
+
 def capture_trace_waterfall(client, trace_id: str | None = None) -> None:
     if trace_id is None:
         res = client.api.trace.list(limit=1)
@@ -82,7 +91,7 @@ def capture_trace_waterfall(client, trace_id: str | None = None) -> None:
         "latency_s": getattr(tr, "latency", None),
         "total_cost_usd": getattr(tr, "total_cost", None),
         "user_id": getattr(tr, "user_id", None),
-        "metadata": getattr(tr, "metadata", None),
+        "metadata": _clean_metadata(getattr(tr, "metadata", None)),
         "observations": [
             {
                 "id": o.id,
@@ -96,7 +105,7 @@ def capture_trace_waterfall(client, trace_id: str | None = None) -> None:
                 "prompt_name": getattr(o, "prompt_name", None),
                 "prompt_version": getattr(o, "prompt_version", None),
                 "usage": getattr(o, "usage", None),
-                "metadata": getattr(o, "metadata", None),
+                "metadata": _clean_metadata(getattr(o, "metadata", None)),
                 "cost_details": getattr(o, "cost_details", None),
             }
             for o in (getattr(tr, "observations", None) or [])

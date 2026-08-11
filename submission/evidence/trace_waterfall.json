@@ -11,21 +11,7 @@
     "prompt_version": 1,
     "prompt_source": "langfuse",
     "doc_count": 1,
-    "query_preview": "How should alerts be designed?",
-    "resourceAttributes": {
-      "telemetry.sdk.language": "python",
-      "telemetry.sdk.name": "opentelemetry",
-      "telemetry.sdk.version": "1.44.0",
-      "service.instance.id": "ceac7454-4cd0-44e6-bf8a-b256a3d45822",
-      "service.name": "unknown_service"
-    },
-    "scope": {
-      "name": "langfuse-sdk",
-      "version": "3.2.1",
-      "attributes": {
-        "public_key": "pk-lf-fba68222-6f5b-4828-807e-1259b117c4ef"
-      }
-    }
+    "query_preview": "How should alerts be designed?"
   },
   "observations": [
     {
@@ -46,21 +32,7 @@
         "prompt_name": "day13-chat",
         "prompt_label": "production",
         "prompt_version": 1,
-        "prompt_source": "langfuse",
-        "resourceAttributes": {
-          "telemetry.sdk.language": "python",
-          "telemetry.sdk.name": "opentelemetry",
-          "telemetry.sdk.version": "1.44.0",
-          "service.instance.id": "ceac7454-4cd0-44e6-bf8a-b256a3d45822",
-          "service.name": "unknown_service"
-        },
-        "scope": {
-          "name": "langfuse-sdk",
-          "version": "3.2.1",
-          "attributes": {
-            "public_key": "pk-lf-fba68222-6f5b-4828-807e-1259b117c4ef"
-          }
-        }
+        "prompt_source": "langfuse"
       },
       "cost_details": {
         "total": 0.00234
