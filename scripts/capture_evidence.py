@@ -114,6 +114,30 @@ def capture_trace_waterfall(client, trace_id: str | None = None) -> None:
     _write("trace_waterfall.json", json.dumps(payload, indent=2, default=str) + "\n")
 
 
+def _scan_traces(client, limit: int = 40) -> list[dict]:
+    """Return one entry per trace that carries prompt metadata."""
+    res = client.api.trace.list(limit=limit)
+    out = []
+    for t in res.data:
+        try:
+            full = client.api.trace.get(t.id)
+        except Exception:
+            continue
+        for o in (getattr(full, "observations", None) or []):
+            md = getattr(o, "metadata", None) or {}
+            if "prompt_name" in md:
+                out.append({
+                    "trace_id": full.id,
+                    "name": md["prompt_name"],
+                    "label": md["prompt_label"],
+                    "version": md["prompt_version"],
+                    "user_id": getattr(full, "user_id", None),
+                    "latency_s": getattr(full, "latency", None),
+                })
+                break
+    return out
+
+
 def capture_prompt_versions(client) -> None:
     prod = client.get_prompt(PROMPT_NAME, label="production", type="text")
     cand = client.get_prompt(PROMPT_NAME, label="candidate", type="text")
@@ -123,22 +147,25 @@ def capture_prompt_versions(client) -> None:
         "production -> version %s" % prod.version,
         "candidate  -> version %s" % cand.version,
         "",
-        "Sample trace metadata (prompt_name/prompt_label/prompt_version):",
     ]
-    res = client.api.trace.list(limit=3)
-    for t in res.data:
-        try:
-            full = client.api.trace.get(t.id)
-        except Exception:
-            continue
-        for o in (getattr(full, "observations", None) or []):
-            md = getattr(o, "metadata", None) or {}
-            if "prompt_name" in md:
-                lines.append(
-                    "  trace=%s name=%s label=%s version=%s" % (
-                        full.id, md["prompt_name"], md["prompt_label"], md["prompt_version"])
-                )
-                break
+
+    traces = _scan_traces(client)
+    prod_traces = [t for t in traces if t["label"] == "production"]
+    cand_traces = [t for t in traces if t["label"] == "candidate"]
+
+    lines.append("Trace chứng minh version/label khác nhau (PROMPT_VERSIONING.md):")
+    for t in sorted(prod_traces, key=lambda x: x["trace_id"])[:3]:
+        lines.append(
+            "  [production] trace=%s name=%s label=%s version=%s" % (
+                t["trace_id"], t["name"], t["label"], t["version"])
+        )
+    for t in sorted(cand_traces, key=lambda x: x["trace_id"])[:2]:
+        lines.append(
+            "  [candidate ] trace=%s name=%s label=%s version=%s" % (
+                t["trace_id"], t["name"], t["label"], t["version"])
+        )
+    if not cand_traces:
+        lines.append("  !!! CHƯA CÓ trace candidate v2 - chạy app với LANGFUSE_PROMPT_LABEL=candidate !!!")
     _write("prompt_versions.txt", "\n".join(lines) + "\n")
 
 
@@ -169,6 +196,32 @@ def capture_prompt_rollback(client) -> None:
         f"Final state: production=v{after_rollback}, candidate=v{cand.version}.",
     ])
     _write("prompt_rollback.txt", content + "\n")
+
+
+def capture_pii_log() -> None:
+    import re
+
+    records = _load_logs()
+    seen: set[str] = set()
+    selected: list[dict] = []
+    for r in reversed(records):
+        if r.get("event") != "request_received":
+            continue
+        preview = (r.get("payload") or {}).get("message_preview", "")
+        if not isinstance(preview, str):
+            continue
+        for pii_type in sorted(set(re.findall(r"REDACTED_[A-Z_]+", preview))):
+            if pii_type not in seen:
+                seen.add(pii_type)
+                selected.append(r)
+                break
+        if len(seen) >= 3:
+            break
+    if selected:
+        _write(
+            "pii_log_line.jsonl",
+            "\n".join(json.dumps(r, ensure_ascii=False) for r in selected) + "\n",
+        )
 
 
 def capture_correlation_id_logs() -> None:
@@ -224,10 +277,11 @@ def main() -> int:
         if args.only in (None, "rollback"):
             capture_prompt_rollback(client)
 
-    if args.only in (None, "correlation"):
+    if args.only in (None, "correlation", "pii"):
         capture_correlation_id_logs()
-    if args.only in (None, "pii"):
-        capture_pii_redaction()
+        capture_pii_log()
+        if args.only == "pii" or args.only is None:
+            capture_pii_redaction()
 
     return 0
 

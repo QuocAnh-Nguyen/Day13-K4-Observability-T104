@@ -3,7 +3,9 @@ Prompt versions (Langfuse, name=day13-chat)
 production -> version 1
 candidate  -> version 2
 
-Sample trace metadata (prompt_name/prompt_label/prompt_version):
-  trace=893225ea098f2ed2799a3d2e55634276 name=day13-chat label=production version=1
-  trace=68712100f6f6b00febcd41b160168b25 name=day13-chat label=production version=1
-  trace=5a48fd6a6cc4197f5b7cb2688b2a0f1b name=day13-chat label=production version=1
+Trace chứng minh version/label khác nhau (PROMPT_VERSIONING.md):
+  [production] trace=0276a49b3a1f48beaf73628aa53b4e5e name=day13-chat label=production version=1
+  [production] trace=0f2ad64dd6bb96ed538624ad6d51b4da name=day13-chat label=production version=1
+  [production] trace=10a76be9d10ef54b9e6e0e5557585622 name=day13-chat label=production version=1
+  [candidate ] trace=a6dfc72cee0fddd126c3af021a5bdd75 name=day13-chat label=candidate version=2
+  [candidate ] trace=dc2023c6452da188076e475d1b75749b name=day13-chat label=candidate version=2
