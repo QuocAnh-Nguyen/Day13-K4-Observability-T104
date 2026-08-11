@@ -1,0 +1,17 @@
+{
+  "healthy": true,
+  "summary": {
+    "records": 64,
+    "pii_leaks": 0,
+    "latency_breaches": 0,
+    "error_rate_pct": 0.0,
+    "error_rate_slo": 2,
+    "latency_p95_ms": 151,
+    "latency_slo_ms": 3000,
+    "quality_slo": 0.75
+  },
+  "anomalies": {
+    "pii_leaks": [],
+    "latency_breaches": []
+  }
+}

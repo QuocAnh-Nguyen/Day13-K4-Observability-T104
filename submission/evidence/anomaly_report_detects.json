@@ -1,0 +1,29 @@
+{
+  "healthy": false,
+  "summary": {
+    "records": 3,
+    "pii_leaks": 1,
+    "latency_breaches": 1,
+    "error_rate_pct": 0.0,
+    "error_rate_slo": 2,
+    "latency_p95_ms": 800,
+    "latency_slo_ms": 3000,
+    "quality_slo": 0.75
+  },
+  "anomalies": {
+    "pii_leaks": [
+      {
+        "correlation_id": "req-aaaa1111",
+        "event": "request_received",
+        "type": "email"
+      }
+    ],
+    "latency_breaches": [
+      {
+        "correlation_id": "req-bbbb222",
+        "latency_ms": 4500,
+        "threshold": 3000
+      }
+    ]
+  }
+}

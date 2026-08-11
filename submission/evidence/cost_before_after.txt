@@ -1,0 +1,11 @@
+Cost Optimization — Response Cache (bonus)
+Mode: mock LLM + cost_spike incident (output tokens x4)
+
+BEFORE (cache OFF): 10 unique queries
+  total_cost_usd = 0.0825      tokens_out = 5372      latency ~= 310ms
+AFTER (cache ON, re-serving the SAME 10 queries):
+  total_cost_usd = 0.00 incremental      tokens_out = 0 incremental
+  latency ~= 10ms  (cache hit, no LLM call)
+
+Savings on repeat traffic: ~100% cost and ~30x latency for duplicate questions.
+Definition (app/response_cache.py): key = sha256(feature + message); enabled via RESPONSE_CACHE=1.

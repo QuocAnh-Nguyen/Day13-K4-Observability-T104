@@ -13,6 +13,8 @@ if str(REPO_ROOT) not in sys.path:
 
 load_dotenv(REPO_ROOT / ".env")
 
+from app.audit import audit
+
 from langfuse import get_client
 
 
@@ -62,6 +64,13 @@ def main() -> int:
             new_labels=["baseline"],
         )
         current = client.get_prompt(args.name, label="production", type="text")
+        audit(
+            "prompt_label_change",
+            prompt_name=args.name,
+            production_label_moved_to=f"v{current.version}",
+            from_version=candidate.version,
+            action="rollback",
+        )
         print(f"Rollback applied: production -> v{current.version} (was v{candidate.version})")
         return 0
 

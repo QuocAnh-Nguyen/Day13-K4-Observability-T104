@@ -10,6 +10,7 @@ from .mock_llm import FakeLLM
 from .mock_rag import retrieve
 from .pii import hash_user_id, summarize_text
 from .prompt_management import resolve_prompt
+from .response_cache import ResponseCache
 from .tracing import get_langfuse_client, observe, tracing_enabled
 
 
@@ -33,10 +34,31 @@ class LabAgent:
     def __init__(self, model: str = "gemini-3.1-flash-lite") -> None:
         self.model = model
         self.llm = GeminiLLM(model=model) if os.getenv("GOOGLE_API_KEY") else FakeLLM(model=model)
+        self.cache = ResponseCache()
 
     @observe(as_type="generation", capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
         started = time.perf_counter()
+        cache_key = self.cache.key(feature, message)
+        hit = self.cache.get(cache_key) if self.cache.enabled else None
+        if hit is not None:
+            latency_ms = int((time.perf_counter() - started) * 1000)
+            metrics.record_request(
+                latency_ms=latency_ms,
+                cost_usd=0.0,
+                tokens_in=0,
+                tokens_out=0,
+                quality_score=hit["quality_score"],
+            )
+            return AgentResult(
+                answer=hit["answer"],
+                latency_ms=latency_ms,
+                tokens_in=0,
+                tokens_out=0,
+                cost_usd=0.0,
+                quality_score=hit["quality_score"],
+            )
+
         docs = _retrieve_span(message)
         langfuse_client = get_langfuse_client()
         prompt = resolve_prompt(
@@ -87,6 +109,11 @@ class LabAgent:
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
             quality_score=quality_score,
+        )
+
+        self.cache.set(
+            cache_key,
+            {"answer": response.text, "quality_score": quality_score},
         )
 
         return AgentResult(
