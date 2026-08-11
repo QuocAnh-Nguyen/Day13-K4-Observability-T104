@@ -1,0 +1,34 @@
+Official K4 challenge investigation (config/challenge.json, cohort=K4)
+incident=rag_slow  latency_threshold_ms=2000  affected_feature=monitoring
+
+Metric -> Trace -> Log chain for each challenge query
+
+[k4-challenge-s01] correlation_id=req-2d56ae10 latency_ms=2651 BREACH tokens_in=67 tokens_out=160 cost_usd=0.002601
+      trace_id=073809f8247ec45ca8e25ee17ff73ec2
+      slowest span: id=5f30ab06e420b94c type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+      log[request_received] preview=Explain why metrics traces and logs work together.
+
+[k4-challenge-s02] correlation_id=req-5a5b7db6 latency_ms=2651 BREACH tokens_in=66 tokens_out=101 cost_usd=0.001713
+      trace_id=86ed68b0678911c18f12cdf83e03fd4f
+      slowest span: id=5696640274cad976 type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+      log[request_received] preview=How should an engineer investigate tail latency?
+
+[k4-challenge-s03] correlation_id=req-800b3b18 latency_ms=2650 BREACH tokens_in=67 tokens_out=126 cost_usd=0.002091
+      trace_id=768f2c76de5a52e3949babcc35dbb3b7
+      slowest span: id=a58d3100b074a739 type=GENERATION name=run latency=2.653s model=claude-sonnet-4-5
+      log[request_received] preview=Summarize the observability workflow for an AI API.
+
+[k4-challenge-s04] correlation_id=req-4e2d141d latency_ms=2650 BREACH tokens_in=68 tokens_out=118 cost_usd=0.001974
+      trace_id=e03ca62918053bae27b2303c11ded0b9
+      slowest span: id=918b80231f76478d type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+      log[request_received] preview=Which signal should be checked after latency increases?
+
+[k4-challenge-s05] correlation_id=req-8fc49d4f latency_ms=2650 BREACH tokens_in=67 tokens_out=169 cost_usd=0.002736
+      trace_id=5822e893884f1ff42f9bc6d8412bef9e
+      slowest span: id=f19c820f40b889ea type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+      log[request_received] preview=Describe how to prove a slow span is the root cause.
+
+Root cause: STATE['rag_slow'] adds a 2.5s sleep in app/mock_rag.retrieve() before
+the mock LLM call, pushing every request for the affected 'monitoring' feature above
+the 2000ms latency threshold. Metric (p95/latency_ms -> ~2650ms) -> trace (slow span in
+app/mock_rag.retrieve) -> log (matching correlation_id shows latency_ms >= 2000).

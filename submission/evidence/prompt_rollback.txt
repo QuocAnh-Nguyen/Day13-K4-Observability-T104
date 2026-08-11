@@ -1,0 +1,9 @@
+Prompt label rollback drill (name=day13-chat, 'production' label)
+
+step 1 BEFORE          : production -> v1
+step 2 promote v2 to production : production -> v2
+step 3 rollback to v1  : production -> v1
+
+Versions are immutable; only the 'production' label assignment moves,
+so a bad candidate can be rolled back instantly without a redeploy.
+Final state: production=v1, candidate=v2.

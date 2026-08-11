@@ -1,0 +1,70 @@
+{
+  "trace_id": "893225ea098f2ed2799a3d2e55634276",
+  "name": "run",
+  "timestamp": "2026-08-11 13:15:20.068000+00:00",
+  "latency_s": 0.151,
+  "total_cost_usd": 0.00234,
+  "user_id": "105a9cef3903",
+  "metadata": {
+    "prompt_name": "day13-chat",
+    "prompt_label": "production",
+    "prompt_version": 1,
+    "prompt_source": "langfuse",
+    "doc_count": 1,
+    "query_preview": "How should alerts be designed?",
+    "resourceAttributes": {
+      "telemetry.sdk.language": "python",
+      "telemetry.sdk.name": "opentelemetry",
+      "telemetry.sdk.version": "1.44.0",
+      "service.instance.id": "ceac7454-4cd0-44e6-bf8a-b256a3d45822",
+      "service.name": "unknown_service"
+    },
+    "scope": {
+      "name": "langfuse-sdk",
+      "version": "3.2.1",
+      "attributes": {
+        "public_key": "pk-lf-fba68222-6f5b-4828-807e-1259b117c4ef"
+      }
+    }
+  },
+  "observations": [
+    {
+      "id": "db2bfe93954f606a",
+      "type": "GENERATION",
+      "name": "run",
+      "parent_observation_id": null,
+      "start_time": "2026-08-11 13:15:20.068000+00:00",
+      "end_time": "2026-08-11 13:15:20.219000+00:00",
+      "latency_s": 0.151,
+      "model": "claude-sonnet-4-5",
+      "prompt_name": "day13-chat",
+      "prompt_version": 1,
+      "usage": "input=0 output=0 total=204 unit=<ModelUsageUnit.TOKENS: 'TOKENS'> input_cost=None output_cost=None total_cost=None",
+      "metadata": {
+        "doc_count": 1,
+        "query_preview": "How should alerts be designed?",
+        "prompt_name": "day13-chat",
+        "prompt_label": "production",
+        "prompt_version": 1,
+        "prompt_source": "langfuse",
+        "resourceAttributes": {
+          "telemetry.sdk.language": "python",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.44.0",
+          "service.instance.id": "ceac7454-4cd0-44e6-bf8a-b256a3d45822",
+          "service.name": "unknown_service"
+        },
+        "scope": {
+          "name": "langfuse-sdk",
+          "version": "3.2.1",
+          "attributes": {
+            "public_key": "pk-lf-fba68222-6f5b-4828-807e-1259b117c4ef"
+          }
+        }
+      },
+      "cost_details": {
+        "total": 0.00234
+      }
+    }
+  ]
+}

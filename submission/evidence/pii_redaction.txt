@@ -1,0 +1,14 @@
+PII redaction proof (raw input -> scrubbed log value):
+
+raw : Contact my email student@vinuni.edu.vn
+log : Contact my email [REDACTED_EMAIL]
+
+raw : My phone is 090 123 4567
+log : My phone is [REDACTED_PHONE_VN]
+
+raw : Passport B1234567 issued at the airport
+log : Passport [REDACTED_PASSPORT_VN] issued at the airport
+
+raw : Verify credit card 4111 1111 1111 1111
+log : Verify credit card [REDACTED_CREDIT_CARD]
+
