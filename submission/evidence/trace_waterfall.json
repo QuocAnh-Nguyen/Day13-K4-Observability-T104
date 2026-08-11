@@ -1,42 +1,57 @@
 {
-  "trace_id": "893225ea098f2ed2799a3d2e55634276",
+  "trace_id": "f4c7a4ed9cc6a1fb987409ddc0e6d9fd",
   "name": "run",
-  "timestamp": "2026-08-11 13:15:20.068000+00:00",
-  "latency_s": 0.151,
-  "total_cost_usd": 0.00234,
-  "user_id": "105a9cef3903",
+  "timestamp": "2026-08-11 15:20:58.397000+00:00",
+  "latency_s": 3.488,
+  "total_cost_usd": 0.000669,
+  "user_id": "6b83e74c0874",
   "metadata": {
     "prompt_name": "day13-chat",
     "prompt_label": "production",
     "prompt_version": 1,
     "prompt_source": "langfuse",
     "doc_count": 1,
-    "query_preview": "How should alerts be designed?"
+    "query_preview": "Which signal should be checked after latency increases?"
   },
   "observations": [
     {
-      "id": "db2bfe93954f606a",
+      "id": "25b2273787609232",
       "type": "GENERATION",
       "name": "run",
       "parent_observation_id": null,
-      "start_time": "2026-08-11 13:15:20.068000+00:00",
-      "end_time": "2026-08-11 13:15:20.219000+00:00",
-      "latency_s": 0.151,
-      "model": "claude-sonnet-4-5",
+      "start_time": "2026-08-11 15:20:58.397000+00:00",
+      "end_time": "2026-08-11 15:21:01.885000+00:00",
+      "latency_s": 3.488,
+      "model": "gemini-3.1-flash-lite",
       "prompt_name": "day13-chat",
       "prompt_version": 1,
-      "usage": "input=0 output=0 total=204 unit=<ModelUsageUnit.TOKENS: 'TOKENS'> input_cost=None output_cost=None total_cost=None",
+      "usage": "input=0 output=0 total=91 unit=<ModelUsageUnit.TOKENS: 'TOKENS'> input_cost=None output_cost=None total_cost=None",
       "metadata": {
         "doc_count": 1,
-        "query_preview": "How should alerts be designed?",
+        "query_preview": "Which signal should be checked after latency increases?",
         "prompt_name": "day13-chat",
         "prompt_label": "production",
         "prompt_version": 1,
         "prompt_source": "langfuse"
       },
       "cost_details": {
-        "total": 0.00234
+        "total": 0.000669
       }
+    },
+    {
+      "id": "f127cefd930f0b29",
+      "type": "SPAN",
+      "name": "retrieval",
+      "parent_observation_id": "25b2273787609232",
+      "start_time": "2026-08-11 15:20:58.397000+00:00",
+      "end_time": "2026-08-11 15:21:00.897000+00:00",
+      "latency_s": 2.5,
+      "model": null,
+      "prompt_name": null,
+      "prompt_version": null,
+      "usage": "input=0 output=0 total=0 unit=<ModelUsageUnit.TOKENS: 'TOKENS'> input_cost=None output_cost=None total_cost=None",
+      "metadata": {},
+      "cost_details": {}
     }
   ]
 }

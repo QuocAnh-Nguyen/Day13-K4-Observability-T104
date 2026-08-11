@@ -21,8 +21,8 @@
 
 - Evidence correlation ID: `submission/evidence/correlation_id_logs.jsonl` — cùng `req-b43be1b9` trên cả `request_received` và `response_sent`.
 - Evidence PII redaction: `submission/evidence/pii_log_line.jsonl` — các dòng log **thực** trong `request_received` có `[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_CREDIT_CARD]` (kèm correlation ID + model); kèm `submission/evidence/pii_redaction.txt` show input thô vs giá trị đã scrub (`[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_PASSPORT_VN]`, `[REDACTED_CREDIT_CARD]`).
-- Evidence trace waterfall: `submission/evidence/trace_waterfall.json` — trace `893225ea098f2ed2799a3d2e55634276`.
-- Giải thích một span đáng chú ý: span `GENERATION "run"` (`db2bfe93954f606a`) gộp toàn bộ pipeline (RAG retrieve + LLM) nên baseline latency 0.151s; khi bật `rag_slow` span tương tự tăng lên ~2.65s và là nơi khoanh vùng root cause (xem mục 6).
+- Evidence trace waterfall: `submission/evidence/trace_waterfall.json` — trace `f4c7a4ed9cc6a1fb987409ddc0e6d9fd` (3 tầng: trace → GENERATION `run` 3.49s → SPAN `retrieval` 2.5s).
+- Giải thích một span đáng chú ý: span `SPAN "retrieval"` (`f127cefd930f0b29`, 2.5s) chiếm hầu hết thời lượng của GENERATION `run` (3.49s) trong trace challenge; đây chính là tầng gây chậm do incident `rag_slow` (`time.sleep(2.5)` trong `mock_rag.retrieve`). Ảnh chụp waterfall phải thấy rõ span `retrieval` tách riêng để chứng minh "retrieval là nguồn gây chậm".
 
 ## 4. Prompt versioning
 
@@ -45,8 +45,8 @@
 
 - Challenge ID: `day13-k4-observability-v1` (cohort K4, `config/challenge.json`).
 - Triệu chứng từ metrics: toàn bộ 5 query `monitoring` có `latency_ms ≈ 2650ms > 2000ms` (ngưỡng `latency_threshold_ms`), 5/5 là BREACH.
-- Trace ID liên quan: `073809f8247ec45ca8e25ee17ff73ec2`, `86ed68b0678911c18f12cdf83e03fd4f`, `768f2c76de5a52e3949babcc35dbb3b7`, `e03ca62918053bae27b2303c11ded0b9`, `5822e893884f1ff42f9bc6d8412bef9e`.
-- Log line/correlation ID liên quan: `req-2d56ae10`, `req-5a5b7db6`, `req-800b3b18`, `req-4e2d141d`, `req-8fc49d4f` — log `response_sent` có `latency_ms ≥ 2650` (chi tiết tại `submission/evidence/challenge_evidence.txt`).
+- Trace ID liên quan: `100efea91800b09ac27d9482046c4a10`, `64e78098053784de36ab2a0b031bb998`, `3db803d06440309ae19b64c230df65d1`, `f4c7a4ed9cc6a1fb987409ddc0e6d9fd`, `58037bb17543dc0d03d761bd48b1feb0` — mỗi trace có `SPAN "retrieval"` 2.5s tách riêng.
+- Log line/correlation ID liên quan: `req-9590fa60`, `req-dd8a407c`, `req-a4c31e1b`, `req-8a1e586b`, `req-4a1a84e9` — log `response_sent` có `latency_ms ≥ 3487ms` (chi tiết tại `submission/evidence/challenge_evidence.txt`).
 - Root cause: `STATE["rag_slow"]` thêm `time.sleep(2.5)` trong `app/mock_rag.retrieve()` (app/mock_rag.py:17-18), làm mọi request feature `monitoring` vượt ngưỡng 2000ms.
 - Fix action: tắt incident `rag_slow` (`scripts/inject_incident.py --disable`); loại bỏ delay trong `mock_rag.retrieve`.
 - Preventive measure: đặt timeout/circuit-breaker cho bước retrieve; theo dõi SLO `latency_p95` qua alert `high_latency_p95` để phát hiện sớm, không đợi user phàn nàn.

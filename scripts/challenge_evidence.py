@@ -72,12 +72,19 @@ def main() -> int:
         lines.append(f"      trace_id={trace_id}")
         if trace is not None:
             obs = getattr(trace, "observations", None) or []
-            slow_obs = max(obs, key=lambda o: getattr(o, "latency", 0) or 0, default=None)
-            if slow_obs is not None:
+            retrieval = next((o for o in obs if getattr(o, "name", None) == "retrieval"), None)
+            if retrieval is not None:
                 lines.append(
-                    f"      slowest span: id={slow_obs.id} type={slow_obs.type} name={slow_obs.name} "
-                    f"latency={getattr(slow_obs, 'latency', None)}s model={getattr(slow_obs, 'model', None)}"
+                    f"      root-cause span: id={retrieval.id} type={retrieval.type} "
+                    f"name=retrieval latency={getattr(retrieval, 'latency', None)}s"
                 )
+            else:
+                slow_obs = max(obs, key=lambda o: getattr(o, "latency", 0) or 0, default=None)
+                if slow_obs is not None:
+                    lines.append(
+                        f"      slowest span: id={slow_obs.id} type={slow_obs.type} name={slow_obs.name} "
+                        f"latency={getattr(slow_obs, 'latency', None)}s model={getattr(slow_obs, 'model', None)}"
+                    )
         if recv_log:
             preview = (recv_log.get("payload") or {}).get("message_preview", "")
             lines.append(f"      log[request_received] preview={preview}")

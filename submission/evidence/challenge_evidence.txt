@@ -3,29 +3,29 @@ incident=rag_slow  latency_threshold_ms=2000  affected_feature=monitoring
 
 Metric -> Trace -> Log chain for each challenge query
 
-[k4-challenge-s01] correlation_id=req-2d56ae10 latency_ms=2651 BREACH tokens_in=67 tokens_out=160 cost_usd=0.002601
-      trace_id=073809f8247ec45ca8e25ee17ff73ec2
-      slowest span: id=5f30ab06e420b94c type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+[k4-challenge-s01] correlation_id=req-9590fa60 latency_ms=3563 BREACH tokens_in=58 tokens_out=162 cost_usd=0.002604
+      trace_id=100efea91800b09ac27d9482046c4a10
+      root-cause span: id=1e113339e0a559c9 type=SPAN name=retrieval latency=2.5s
       log[request_received] preview=Explain why metrics traces and logs work together.
 
-[k4-challenge-s02] correlation_id=req-5a5b7db6 latency_ms=2651 BREACH tokens_in=66 tokens_out=101 cost_usd=0.001713
-      trace_id=86ed68b0678911c18f12cdf83e03fd4f
-      slowest span: id=5696640274cad976 type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+[k4-challenge-s02] correlation_id=req-dd8a407c latency_ms=7440 BREACH tokens_in=57 tokens_out=219 cost_usd=0.003456
+      trace_id=64e78098053784de36ab2a0b031bb998
+      root-cause span: id=db09286cca5801ff type=SPAN name=retrieval latency=2.5s
       log[request_received] preview=How should an engineer investigate tail latency?
 
-[k4-challenge-s03] correlation_id=req-800b3b18 latency_ms=2650 BREACH tokens_in=67 tokens_out=126 cost_usd=0.002091
-      trace_id=768f2c76de5a52e3949babcc35dbb3b7
-      slowest span: id=a58d3100b074a739 type=GENERATION name=run latency=2.653s model=claude-sonnet-4-5
+[k4-challenge-s03] correlation_id=req-a4c31e1b latency_ms=4789 BREACH tokens_in=59 tokens_out=198 cost_usd=0.003147
+      trace_id=3db803d06440309ae19b64c230df65d1
+      root-cause span: id=ad5f464e0950de72 type=SPAN name=retrieval latency=2.5s
       log[request_received] preview=Summarize the observability workflow for an AI API.
 
-[k4-challenge-s04] correlation_id=req-4e2d141d latency_ms=2650 BREACH tokens_in=68 tokens_out=118 cost_usd=0.001974
-      trace_id=e03ca62918053bae27b2303c11ded0b9
-      slowest span: id=918b80231f76478d type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+[k4-challenge-s04] correlation_id=req-8a1e586b latency_ms=3487 BREACH tokens_in=58 tokens_out=33 cost_usd=0.000669
+      trace_id=f4c7a4ed9cc6a1fb987409ddc0e6d9fd
+      root-cause span: id=f127cefd930f0b29 type=SPAN name=retrieval latency=2.5s
       log[request_received] preview=Which signal should be checked after latency increases?
 
-[k4-challenge-s05] correlation_id=req-8fc49d4f latency_ms=2650 BREACH tokens_in=67 tokens_out=169 cost_usd=0.002736
-      trace_id=5822e893884f1ff42f9bc6d8412bef9e
-      slowest span: id=f19c820f40b889ea type=GENERATION name=run latency=2.652s model=claude-sonnet-4-5
+[k4-challenge-s05] correlation_id=req-4a1a84e9 latency_ms=3963 BREACH tokens_in=61 tokens_out=188 cost_usd=0.003003
+      trace_id=58037bb17543dc0d03d761bd48b1feb0
+      root-cause span: id=dbbd8ba8dc6e55cc type=SPAN name=retrieval latency=2.5s
       log[request_received] preview=Describe how to prove a slow span is the root cause.
 
 Root cause: STATE['rag_slow'] adds a 2.5s sleep in app/mock_rag.retrieve() before
