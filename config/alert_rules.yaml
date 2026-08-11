@@ -1,19 +1,19 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
+  - name: high_latency_p95
+    severity: critical
+    condition: 'latency_p95_ms > 3000 for 2 consecutive evaluations'
     type: symptom-based
-    owner: TODO
+    owner: platform
     runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
+  - name: error_rate_breach
+    severity: high
+    condition: 'error_rate_pct > 2 for 2 consecutive evaluations'
     type: symptom-based
-    owner: TODO
+    owner: platform
     runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
+  - name: cost_breach
+    severity: medium
+    condition: 'total_cost_usd > 2.5 over the 60-minute window'
     type: symptom-based
-    owner: TODO
+    owner: platform
     runbook: docs/alerts.md#alert-3

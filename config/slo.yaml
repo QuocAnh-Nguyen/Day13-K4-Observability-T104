@@ -4,13 +4,16 @@ slis:
   latency_p95_ms:
     objective: 3000
     target: 99.5
-    note: Replace with your group's target
+    note: p95 tail latency budget; matches dashboard latency threshold for the rag_slow incident (challenge injects 2.5s sleep).
   error_rate_pct:
     objective: 2
     target: 99.0
+    note: Trade up to 2% of requests failing before user-facing degradation; matches dashboard errors threshold.
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    note: Daily cost ceiling for the mock endpoint; 60-min window alert uses same 2.5 USD budget.
   quality_score_avg:
     objective: 0.75
     target: 95.0
+    note: Mean heuristic quality score should stay above 0.75 over the window.
