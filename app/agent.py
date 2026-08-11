@@ -23,6 +23,12 @@ class AgentResult:
     quality_score: float
 
 
+@observe(as_type="span", name="retrieval", capture_input=False, capture_output=False)
+def _retrieve_span(message: str) -> list[str]:
+    """Trace the RAG retrieval as its own span so 'retrieval' is visible in the waterfall."""
+    return retrieve(message)
+
+
 class LabAgent:
     def __init__(self, model: str = "gemini-3.1-flash-lite") -> None:
         self.model = model
@@ -31,7 +37,7 @@ class LabAgent:
     @observe(as_type="generation", capture_input=False, capture_output=False)
     def run(self, user_id: str, feature: str, session_id: str, message: str) -> AgentResult:
         started = time.perf_counter()
-        docs = retrieve(message)
+        docs = _retrieve_span(message)
         langfuse_client = get_langfuse_client()
         prompt = resolve_prompt(
             langfuse_client,
