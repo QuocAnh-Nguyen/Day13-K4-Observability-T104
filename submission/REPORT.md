@@ -56,5 +56,33 @@
 | Thành viên      | Phần việc                                                                                                                                                               | Commit/PR            | Điều đã học                                                                                                                               |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Nguyễn Quốc Anh | Logging & PII (middleware correlation ID, contextvars, scrub_event trước JSON renderer), Tracing & Prompt versioning (seed `day13-chat` v1/v2 trong Langfuse, rollback) | `f041008`, `7a35846` | Vòng đời contextvar structlog, thứ tự PII processor trước renderer, prompt label/version trong trace khi đổi label không làm mất version. |
-| Hoàng Bảo Huy   | Dashboard Streamlit 6 panel, SLO, alert rules, runbook                                                                                                                  | `77a2276`            | Cách tính percentile p50/p95/p99, contract panel trong `dashboard.yaml`, cách thiết kế alert symptom-based khớp SLO.                      |
+| Hoàng Bảo Huy   | Dashboard Streamlit 6 panel, SLO, alert rules, runbook; Bonus: cache response (cost), audit log, anomaly detector | `77a2276`, `eaba8b8` | Cách tính percentile p50/p95/p99, contract panel, cache response đưa cost ~0 cho traffic lặp lại |
 | Trương Ái Linh  | Chạy load/challenge, chụp evidence, soạn báo cáo                                                                                                                        | `030537d`            | Luồng điều tra Metrics → Traces → Logs → root cause và cách dẫn chứng mỗi claim bằng trace ID + log line + metric.                        |
+
+## 8. Bonus
+
+### 8.1 Cost optimization (trước/sau)
+
+Triển khai cache response trong `app/response_cache.py` (bật bằng `RESPONSE_CACHE=1`): cache theo key `sha256(feature + message)`, request trùng lặp bỏ qua LLM.
+
+- **Before** (cache tắt, incident `cost_spike`): 10 query = **$0.0825** / 5372 tokens / ~310ms.
+- **After** (cache bật, chạy lại 10 query giống hệt): **$0.00** / 0 tokens / ~10ms (100% tiết kiệm cho traffic lặp lại).
+- Evidence: `submission/evidence/cost_before_after.txt`.
+
+### 8.2 Audit log tách riêng
+
+`app/audit.py` ghi trail riêng `data/audit.jsonl` cho các sự kiện điều khiển quan trọng: `incident_enabled` / `incident_disabled` (nối vào endpoint control trong `app/main.py`) và `prompt_label_change` (nối vào `scripts/seed_langfuse_prompts.py --rollback`).
+
+- Evidence: `submission/evidence/audit_log.jsonl` (ghi `incident_enabled`/`incident_disabled` cho `cost_spike`).
+
+### 8.3 Custom automation — Anomaly detector
+
+`scripts/anomaly_detector.py` tự quét `data/logs.jsonl`:
+
+- Phát hiện **PII leak** (email, phone VN, CCCD, thẻ, passport).
+- Phát hiện **latency vượt SLO p95** và **error rate**.
+- Exit code ≠ 0 khi có anomaly (dùng cho alert tự động).
+
+Evidence:
+- Baseline healthy: `submission/evidence/anomaly_report.json` (0 leak, 0 breach).
+- Đã kích hoạt trên log có PII + breach: `submission/evidence/anomaly_report_detects.json` (email leak `req-aaaa1111`; latency 4500ms > 3000ms).
