@@ -3,7 +3,7 @@
 ## 1. Thông tin nhóm
 
 - Tên nhóm: **K4 — T104**
-- Repository URL: `https://github.com/QuocAnh-Nguyen/Day13-K4-Observability-T104.git`
+- Repository URL: `https://github.com/QuocAnh-Nguyen/K4-DAY13-2A202601100`
 - Commit SHA cuối: `5960c795d94a3d24972c719fb33a5320474f3ebf` (HEAD trên `main`, sẵn sàng push lên `origin`)
 - Thành viên và vai trò:
   - **Nguyễn Quốc Anh** (`2A202601100`) — Logging & PII; Tracing & Prompt versioning.
@@ -62,7 +62,7 @@
 | Thành viên      | Phần việc                                                                                                                                                               | Commit/PR            | Điều đã học                                                                                                                               |
 | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Nguyễn Quốc Anh | Logging & PII (middleware correlation ID, contextvars, scrub_event trước JSON renderer), Tracing & Prompt versioning (seed `day13-chat` v1/v2 trong Langfuse, rollback) | `f041008`, `7a35846` | Vòng đời contextvar structlog, thứ tự PII processor trước renderer, prompt label/version trong trace khi đổi label không làm mất version. |
-| Hoàng Bảo Huy   | Dashboard Streamlit 6 panel, SLO, alert rules, runbook; Bonus: cache response (cost), audit log, anomaly detector | `77a2276`, `eaba8b8` | Cách tính percentile p50/p95/p99, contract panel, cache response đưa cost ~0 cho traffic lặp lại |
+| Hoàng Bảo Huy   | Dashboard Streamlit 6 panel, SLO, alert rules, runbook; Bonus: cache response (cost), audit log, anomaly detector                                                       | `77a2276`, `eaba8b8` | Cách tính percentile p50/p95/p99, contract panel, cache response đưa cost ~0 cho traffic lặp lại                                          |
 | Trương Ái Linh  | Chạy load/challenge, chụp evidence, soạn báo cáo                                                                                                                        | `030537d`            | Luồng điều tra Metrics → Traces → Logs → root cause và cách dẫn chứng mỗi claim bằng trace ID + log line + metric.                        |
 
 ## 8. Bonus
